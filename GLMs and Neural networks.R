@@ -118,12 +118,11 @@ y <- X %*% true_coefficients + noise
 return(list(X = X, y = y))
 }
 
-# Simulate high-dimensional data with 1000 samples and 100 features
+
 num_samples <- 1000
 num_features <- 100
 data <- simulate_high_dimensional_data(num_samples, num_features)
 
-# Split the data into training and testing sets
 set.seed(42)
 train_indices <- sample(1:num_samples, size = 0.8 * num_samples, replace = FALSE)
 X_train <- data$X[train_indices, ]
@@ -134,7 +133,7 @@ y_test <- data$y[-train_indices]
 # Train a Generalized Linear Model (GLM)
 glm_model <- lm(y_train ~ X_train)
 
-# Make predictions on the test set using the GLM model
+
 glm_predictions <- predict(glm_model, newdata = as.data.frame(X_test))
 
 # Calculate the mean squared error for the GLM model
@@ -144,10 +143,10 @@ print(paste("GLM Mean Squared Error:", round(glm_mse, 4)))
 # Train a Neural Network
 nn_model <- neuralnet(y_train ~ X_train, hidden = c(64, 32), linear.output = TRUE)
 
-# Make predictions on the test set using the Neural Network model
+#
 nn_predictions <- compute(nn_model, as.data.frame(X_test))$net.result
 
-# Calculate the mean squared error for the Neural Network model
+
 nn_mse <- mean((y_test - nn_predictions)^2)
 print(paste("Neural Network Mean Squared Error:", round(nn_mse, 4)))
 
@@ -156,7 +155,6 @@ library(keras)
 library(caret)
 library(MASS)
 
-# Function to simulate high-dimensional data
 simulate_high_dimensional_data <- function(num_samples, num_features) {
 X <- matrix(rnorm(num_samples * num_features), ncol = num_features)
 true_coefficients <- rnorm(num_features)
@@ -170,7 +168,7 @@ num_samples <- 1000
 num_features <- 100
 data <- simulate_high_dimensional_data(num_samples, num_features)
 
-# Split the data into training and testing sets
+
 set.seed(42)
 index <- createDataPartition(data$y, p = 0.8, list = FALSE)
 train_data <- data$X[index, ]
@@ -178,17 +176,16 @@ test_data <- data$X[-index, ]
 y_train <- data$y[index]
 y_test <- data$y[-index]
 
-# Train a Generalized Linear Model (GLM)
+
 glm_model <- lm(y_train ~ ., data = as.data.frame(cbind(y_train, train_data)))
 
-# Make predictions on the test set using the GLM model
 glm_predictions <- predict(glm_model, newdata = as.data.frame(test_data))
 
-# Calculate the mean squared error for the GLM model
+
 glm_mse <- mean((glm_predictions - y_test)^2)
 cat(paste("GLM Mean Squared Error:", round(glm_mse, 4), "\n"))
 
-# Train a Neural Network
+
 nn_model <- keras_model_sequential() %>%
 layer_dense(units = 64, input_shape = num_features, activation = 'relu') %>%
 layer_dense(units = 32, activation = 'relu') %>%
@@ -197,9 +194,8 @@ layer_dense(units = 1, activation = 'linear')
 compile(nn_model, loss = 'mse', optimizer = optimizer_adam(lr = 0.001))
 history <- fit(nn_model, train_data, y_train, epochs = 50, batch_size = 32, verbose = 1)
 
-# Make predictions on the test set using the Neural Network model
+
 nn_predictions <- predict(nn_model, test_data)
 
-# Calculate the mean squared error for the Neural Network model
 nn_mse <- mean((nn_predictions - y_test)^2)
 cat(paste("Neural Network Mean Squared Error:", round(nn_mse, 4), "\n"))
